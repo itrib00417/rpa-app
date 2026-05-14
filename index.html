@@ -5,242 +5,418 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>營繕組業務研析與策進執行</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
 :root {
-  --bg: #0a0e1a;
-  --bg2: #0f1628;
-  --card: #141b2d;
-  --border: rgba(99,179,237,0.15);
-  --teal: #38bdf8;
-  --teal2: #0ea5e9;
-  --purple: #a78bfa;
-  --green: #34d399;
-  --orange: #fb923c;
-  --red: #f87171;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
+  --bg: #000008;
+  --teal: #00ffff;
+  --purple: #bf00ff;
+  --pink: #ff00aa;
+  --gold: #ffd700;
+  --green: #00ff88;
+  --orange: #ff6600;
+  --white: #ffffff;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.7; overflow-x: hidden; }
+
+body {
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  position: fixed; width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle, #fff, var(--teal));
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px var(--teal), 0 0 40px var(--teal);
+  transition: transform .05s;
+}
+
+/* ── CANVAS PARTICLES ── */
+#particle-canvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
 
 /* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(10,14,26,0.92); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 2rem; height: 56px; gap: 0.5rem;
+  background: rgba(0,0,8,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,255,255,0.2);
+  display: flex; align-items: center; padding: 0 2rem; height: 60px; gap: 0.5rem;
+  box-shadow: 0 0 30px rgba(0,255,255,0.1);
 }
 nav a {
-  color: var(--muted); text-decoration: none; font-size: 0.82rem; padding: 6px 12px;
-  border-radius: 6px; transition: all .2s; white-space: nowrap;
+  color: rgba(255,255,255,0.6); text-decoration: none;
+  font-size: 1rem; padding: 6px 14px; border-radius: 6px;
+  transition: all .2s; white-space: nowrap; font-weight: 700;
 }
-nav a:hover, nav a.active { color: var(--teal); background: rgba(56,189,248,0.1); }
-nav .logo { font-weight: 700; color: var(--teal); margin-right: 1rem; font-size: 0.9rem; white-space: nowrap; }
+nav a:hover {
+  color: var(--teal);
+  text-shadow: 0 0 10px var(--teal), 0 0 20px var(--teal);
+  background: rgba(0,255,255,0.08);
+}
+nav .logo {
+  font-weight: 900; font-size: 1.1rem; margin-right: 1rem;
+  background: linear-gradient(90deg, var(--teal), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: none; filter: drop-shadow(0 0 8px cyan);
+}
 
 /* ── HERO ── */
 #hero {
   min-height: 100vh; display: flex; flex-direction: column;
   align-items: center; justify-content: center; text-align: center;
-  background: radial-gradient(ellipse at 50% 0%, rgba(56,189,248,0.12) 0%, transparent 70%),
-              radial-gradient(ellipse at 80% 80%, rgba(167,139,250,0.08) 0%, transparent 60%),
-              var(--bg);
-  padding: 6rem 2rem 4rem;
-  position: relative; overflow: hidden;
+  padding: 8rem 2rem 4rem; position: relative; z-index: 1;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(191,0,255,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(0,255,255,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(255,0,170,0.1) 0%, transparent 50%);
 }
-#hero::before {
-  content: ''; position: absolute; inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(56,189,248,0.05)' stroke-width='1'%3E%3Cpath d='M0 30h60M30 0v60'/%3E%3C/g%3E%3C/svg%3E");
-  pointer-events: none;
-}
-.hero-tag {
-  display: inline-block; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3);
-  color: var(--teal); font-size: 0.78rem; padding: 4px 14px; border-radius: 20px;
-  letter-spacing: 2px; margin-bottom: 1.5rem;
-}
-#hero h1 {
-  font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.2;
-  background: linear-gradient(135deg, #e2e8f0 30%, var(--teal) 70%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
-}
-#hero .sub { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; }
-.hero-meta { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
-.hero-meta span {
-  background: var(--card); border: 1px solid var(--border);
-  padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; color: var(--muted);
-}
-.hero-meta span b { color: var(--text); }
-.scroll-hint { position: absolute; bottom: 2rem; animation: bounce 2s infinite; color: var(--muted); font-size: 1.5rem; }
-@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
 
-/* ── SECTIONS ── */
-section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
-.section-label {
-  display: inline-flex; align-items: center; gap: 8px;
-  color: var(--teal); font-size: 0.78rem; letter-spacing: 2px; font-weight: 600;
-  text-transform: uppercase; margin-bottom: 0.75rem;
+.hero-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, rgba(0,255,255,0.15), rgba(191,0,255,0.15));
+  border: 1px solid rgba(0,255,255,0.5);
+  color: var(--teal); font-size: 1.1rem; padding: 8px 24px;
+  border-radius: 30px; letter-spacing: 4px; margin-bottom: 2rem;
+  text-shadow: 0 0 10px var(--teal);
+  box-shadow: 0 0 20px rgba(0,255,255,0.3), inset 0 0 20px rgba(0,255,255,0.05);
+  animation: badgePulse 2s ease-in-out infinite;
 }
-.section-label::before { content: ''; width: 24px; height: 2px; background: var(--teal); }
-h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 2.5rem; }
-.divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+@keyframes badgePulse {
+  0%,100% { box-shadow: 0 0 20px rgba(0,255,255,0.3), inset 0 0 20px rgba(0,255,255,0.05); }
+  50% { box-shadow: 0 0 40px rgba(0,255,255,0.6), inset 0 0 30px rgba(0,255,255,0.1); }
+}
+
+#hero h1 {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, var(--teal) 40%, var(--purple) 70%, var(--pink) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(0,255,255,0.5));
+  animation: titleGlow 3s ease-in-out infinite;
+}
+@keyframes titleGlow {
+  0%,100% { filter: drop-shadow(0 0 30px rgba(0,255,255,0.5)); }
+  50% { filter: drop-shadow(0 0 60px rgba(191,0,255,0.8)) drop-shadow(0 0 100px rgba(0,255,255,0.4)); }
+}
+
+#hero .sub {
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  color: rgba(255,255,255,0.8); margin-bottom: 3rem; font-weight: 700;
+  text-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.hero-stats { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
+.hero-stat {
+  background: linear-gradient(135deg, rgba(0,255,255,0.05), rgba(191,0,255,0.05));
+  border: 1px solid rgba(0,255,255,0.3); border-radius: 16px;
+  padding: 1.5rem 2.5rem; text-align: center; min-width: 160px;
+  box-shadow: 0 0 30px rgba(0,255,255,0.1);
+  transition: transform .3s, box-shadow .3s;
+}
+.hero-stat:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 60px rgba(0,255,255,0.3), 0 20px 40px rgba(0,0,0,0.5);
+}
+.hero-stat .big { font-size: 3rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 20px var(--gold); }
+.hero-stat .label { font-size: 1rem; color: rgba(255,255,255,0.6); margin-top: 0.3rem; }
+
+.scroll-hint {
+  position: absolute; bottom: 2rem;
+  font-size: 2.5rem; animation: bounce 1.5s infinite;
+  color: var(--teal); text-shadow: 0 0 20px var(--teal);
+}
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(12px)} }
+
+/* ── SECTION WRAPPER ── */
+.section-wrap {
+  position: relative; z-index: 1; padding: 6rem 2rem;
+  max-width: 1200px; margin: 0 auto;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 1rem; font-weight: 900; letter-spacing: 4px;
+  color: var(--teal); text-transform: uppercase;
+  text-shadow: 0 0 10px var(--teal); margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::before, .section-label::after {
+  content: ''; flex: 1; max-width: 60px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teal));
+}
+.section-label::after { background: linear-gradient(90deg, var(--teal), transparent); }
+
+/* ── SECTION TITLE ── */
+h2 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900; margin-bottom: 3rem; line-height: 1.2;
+}
+.neon-title {
+  background: linear-gradient(90deg, var(--white), var(--teal));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 15px rgba(0,255,255,0.4));
+}
+.neon-purple {
+  background: linear-gradient(90deg, var(--white), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 15px rgba(191,0,255,0.4));
+}
+.neon-gold {
+  background: linear-gradient(90deg, var(--white), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 15px rgba(255,215,0,0.4));
+}
+.neon-pink {
+  background: linear-gradient(90deg, var(--white), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 15px rgba(255,0,170,0.4));
+}
+
+/* ── DIVIDER ── */
+.laser-divider {
+  width: 100%; height: 1px; position: relative; margin: 0;
+  background: linear-gradient(90deg, transparent, var(--teal), var(--purple), var(--pink), transparent);
+  box-shadow: 0 0 10px var(--teal), 0 0 20px var(--purple);
+}
 
 /* ── FADE IN ── */
-.fade-in { opacity: 0; transform: translateY(28px); transition: opacity .6s, transform .6s; }
+.fade-in { opacity: 0; transform: translateY(40px) scale(0.97); transition: opacity .7s, transform .7s; }
 .fade-in.visible { opacity: 1; transform: none; }
 
-/* ── PAIN POINTS ── */
-.pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+/* ── PAIN CARDS ── */
+.pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; }
 .pain-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem;
+  background: linear-gradient(135deg, rgba(255,0,100,0.05), rgba(255,100,0,0.05));
+  border: 1px solid rgba(255,50,50,0.3); border-radius: 20px; padding: 2.5rem;
   position: relative; overflow: hidden;
+  box-shadow: 0 0 30px rgba(255,50,50,0.1);
+  transition: transform .3s, box-shadow .3s;
+}
+.pain-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 60px rgba(255,50,50,0.25), 0 20px 40px rgba(0,0,0,0.5);
 }
 .pain-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--red), var(--orange));
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--red, #ff3333), var(--orange));
+  box-shadow: 0 0 15px var(--orange);
 }
-.pain-icon { font-size: 2rem; margin-bottom: 1rem; }
-.pain-card h3 { font-size: 1.05rem; color: var(--red); margin-bottom: 0.5rem; }
-.pain-card .cause { font-size: 0.82rem; color: var(--muted); margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.pain-icon { font-size: 3.5rem; margin-bottom: 1.5rem; }
+.pain-card h3 { font-size: 1.6rem; color: #ff6666; margin-bottom: 1rem; font-weight: 900; text-shadow: 0 0 10px rgba(255,100,100,0.5); }
+.pain-card p { font-size: 1.1rem; line-height: 1.8; color: rgba(255,255,255,0.8); }
+.pain-card .cause { font-size: 1rem; color: rgba(255,200,100,0.8); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,100,50,0.2); }
 .pain-card .cause b { color: var(--orange); }
 
 /* ── EVENTS ── */
-.events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+.events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
 .event-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;
-  display: flex; gap: 1rem; align-items: flex-start;
-  transition: transform .2s, border-color .2s;
+  background: linear-gradient(135deg, rgba(0,255,255,0.03), rgba(191,0,255,0.03));
+  border: 1px solid rgba(0,255,255,0.2); border-radius: 16px; padding: 2rem;
+  display: flex; gap: 1.5rem; align-items: flex-start;
+  transition: transform .3s, box-shadow .3s, border-color .3s;
 }
-.event-card:hover { transform: translateY(-3px); border-color: rgba(56,189,248,0.4); }
-.event-icon { font-size: 2rem; flex-shrink: 0; }
-.event-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
-.event-card p { font-size: 0.82rem; color: var(--muted); }
+.event-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0,255,255,0.5);
+  box-shadow: 0 0 40px rgba(0,255,255,0.15), 0 20px 40px rgba(0,0,0,0.5);
+}
+.event-icon { font-size: 3rem; flex-shrink: 0; }
+.event-card h3 { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.5rem; color: var(--teal); text-shadow: 0 0 8px var(--teal); }
+.event-card p { font-size: 1rem; color: rgba(255,255,255,0.6); line-height: 1.7; }
 
-/* ── CASES ── */
-.tab-bar { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+/* ── TABS ── */
+.tab-bar { display: flex; gap: 0.75rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
 .tab-btn {
-  padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border);
-  background: transparent; color: var(--muted); cursor: pointer; font-size: 0.85rem;
-  transition: all .2s; font-family: inherit;
+  padding: 10px 22px; border-radius: 10px; font-size: 1rem; font-weight: 700;
+  border: 1px solid rgba(0,255,255,0.2); background: transparent;
+  color: rgba(255,255,255,0.5); cursor: pointer; font-family: inherit;
+  transition: all .3s;
 }
-.tab-btn.active { background: rgba(56,189,248,0.15); border-color: var(--teal); color: var(--teal); }
-.tab-btn:hover:not(.active) { border-color: rgba(56,189,248,0.3); color: var(--text); }
-.tab-panel { display: none; animation: fadeUp .35s ease; }
+.tab-btn:hover { color: var(--teal); border-color: rgba(0,255,255,0.5); }
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(0,255,255,0.15), rgba(191,0,255,0.15));
+  border-color: var(--teal); color: var(--teal);
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  text-shadow: 0 0 8px var(--teal);
+}
+.tab-panel { display: none; animation: fadeUp .4s ease; }
 .tab-panel.active { display: block; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
 
-.case-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+/* ── CASE LAYOUT ── */
+.case-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
 @media(max-width:768px){ .case-layout { grid-template-columns: 1fr; } }
 
-.case-info h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
-.pain-section, .solution-section {
-  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;
-}
-.pain-section { border-left: 3px solid var(--red); }
-.solution-section { border-left: 3px solid var(--green); }
-.pain-section h4 { color: var(--red); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 0.75rem; }
-.solution-section h4 { color: var(--green); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 0.75rem; }
-.bullet { display: flex; gap: 0.5rem; margin-bottom: 0.4rem; font-size: 0.9rem; }
-.bullet::before { content: '▸'; color: var(--teal); flex-shrink: 0; margin-top: 2px; }
+.case-info h3 { font-size: 2rem; font-weight: 900; margin-bottom: 1.5rem; }
 
-.stat-row { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+.info-block {
+  border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem;
+}
+.info-block.red {
+  background: rgba(255,50,50,0.06); border: 1px solid rgba(255,50,50,0.25);
+  border-left: 4px solid #ff4444;
+}
+.info-block.green {
+  background: rgba(0,255,136,0.06); border: 1px solid rgba(0,255,136,0.25);
+  border-left: 4px solid var(--green);
+}
+.info-block h4 { font-size: 0.9rem; letter-spacing: 2px; font-weight: 900; margin-bottom: 1rem; }
+.info-block.red h4 { color: #ff6666; text-shadow: 0 0 8px rgba(255,50,50,0.5); }
+.info-block.green h4 { color: var(--green); text-shadow: 0 0 8px rgba(0,255,136,0.5); }
+
+.bullet { display: flex; gap: 0.75rem; margin-bottom: 0.6rem; font-size: 1.05rem; line-height: 1.6; }
+.bullet::before { content: '▸'; color: var(--teal); flex-shrink: 0; margin-top: 3px; text-shadow: 0 0 6px var(--teal); }
+
+.stat-row { display: flex; gap: 1.25rem; flex-wrap: wrap; }
 .stat-box {
-  flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 1rem; text-align: center;
+  flex: 1; min-width: 130px; border-radius: 14px; padding: 1.5rem; text-align: center;
+  background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,100,0,0.08));
+  border: 1px solid rgba(255,215,0,0.3);
+  box-shadow: 0 0 20px rgba(255,215,0,0.1);
 }
-.stat-box .num { font-size: 2rem; font-weight: 800; color: var(--teal); line-height: 1; }
-.stat-box .unit { font-size: 0.72rem; color: var(--muted); }
+.stat-box .num {
+  font-size: 3.5rem; font-weight: 900; color: var(--gold);
+  text-shadow: 0 0 20px var(--gold), 0 0 40px rgba(255,215,0,0.5);
+  line-height: 1;
+}
+.stat-box .unit { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; line-height: 1.5; }
 
-.img-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-.img-gallery img { width: 100%; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; transition: transform .2s; }
-.img-gallery img:hover { transform: scale(1.03); }
-.img-gallery.single img { grid-column: 1 / -1; }
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.img-gallery img {
+  width: 100%; border-radius: 10px; cursor: pointer;
+  border: 1px solid rgba(0,255,255,0.15);
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+  filter: brightness(0.9);
+}
+.img-gallery img:hover {
+  transform: scale(1.05);
+  border-color: var(--teal);
+  box-shadow: 0 0 30px rgba(0,255,255,0.3);
+  filter: brightness(1.1);
+}
 
 /* ── VIDEO ── */
-.video-wrap {
-  background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
-  position: relative;
+.video-section-wrap {
+  position: relative; z-index: 1; padding: 6rem 2rem;
+  max-width: 1200px; margin: 0 auto;
 }
-.video-wrap video { width: 100%; display: block; max-height: 400px; object-fit: contain; background:#000; }
-.video-caption { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+.video-outer {
+  border-radius: 20px; overflow: hidden;
+  border: 1px solid rgba(0,255,255,0.3);
+  box-shadow: 0 0 60px rgba(0,255,255,0.2), 0 0 120px rgba(191,0,255,0.1);
+  background: #000;
+}
+.video-outer video { width: 100%; display: block; max-height: 520px; object-fit: contain; background: #000; }
+.video-caption { text-align: center; font-size: 1.1rem; color: var(--teal); margin-top: 1rem; text-shadow: 0 0 8px var(--teal); font-weight: 700; }
 
 /* ── PRIORITY ── */
-.priority-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+.priority-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
 .priority-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem;
-  position: relative; overflow: hidden;
+  border-radius: 20px; padding: 2.5rem; position: relative; overflow: hidden;
+  transition: transform .3s, box-shadow .3s;
 }
-.p1::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--red),var(--orange)); }
-.p2::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--teal),var(--purple)); }
-.p3::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--muted),#475569); }
-.priority-badge {
-  display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
-  border-radius: 20px; margin-bottom: 0.75rem;
-}
-.p1 .priority-badge { background: rgba(248,113,113,0.15); color: var(--red); }
-.p2 .priority-badge { background: rgba(56,189,248,0.15); color: var(--teal); }
-.p3 .priority-badge { background: rgba(148,163,184,0.15); color: var(--muted); }
-.priority-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem; }
-.tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
-.tag {
-  font-size: 0.72rem; padding: 3px 10px; border-radius: 20px;
-  background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); color: var(--teal);
-}
-.status-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; margin-top: 0.5rem;
-}
-.running { background: rgba(52,211,153,0.1); color: var(--green); }
-.running::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation: pulse 1.5s infinite; }
-.hold { background: rgba(251,146,60,0.1); color: var(--orange); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.priority-card:hover { transform: translateY(-8px); }
+.p1 { background: linear-gradient(135deg, rgba(255,50,50,0.08), rgba(255,100,0,0.08)); border: 1px solid rgba(255,50,50,0.3); box-shadow: 0 0 30px rgba(255,50,50,0.1); }
+.p1:hover { box-shadow: 0 0 60px rgba(255,50,50,0.25), 0 20px 40px rgba(0,0,0,0.5); }
+.p2 { background: linear-gradient(135deg, rgba(0,255,255,0.06), rgba(191,0,255,0.06)); border: 1px solid rgba(0,255,255,0.25); box-shadow: 0 0 30px rgba(0,255,255,0.08); }
+.p2:hover { box-shadow: 0 0 60px rgba(0,255,255,0.2), 0 20px 40px rgba(0,0,0,0.5); }
+.p3 { background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.1); }
+.p3:hover { box-shadow: 0 0 40px rgba(255,255,255,0.08), 0 20px 40px rgba(0,0,0,0.5); }
+
+.p-badge { display:inline-block; font-size:0.85rem; font-weight:900; padding:4px 14px; border-radius:20px; margin-bottom:1rem; letter-spacing:1px; }
+.p1 .p-badge { background:rgba(255,50,50,0.15); color:#ff6666; border:1px solid rgba(255,50,50,0.3); text-shadow:0 0 8px rgba(255,50,50,0.5); }
+.p2 .p-badge { background:rgba(0,255,255,0.1); color:var(--teal); border:1px solid rgba(0,255,255,0.3); text-shadow:0 0 8px var(--teal); }
+.p3 .p-badge { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.15); }
+
+.priority-card h3 { font-size: 1.8rem; font-weight: 900; margin-bottom: 1rem; }
+.priority-card p { font-size: 1.05rem; color: rgba(255,255,255,0.6); margin-bottom: 1.25rem; line-height: 1.7; }
+.tag-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; }
+.tag { font-size:0.85rem; padding:4px 12px; border-radius:20px; background:rgba(0,255,255,0.06); border:1px solid rgba(0,255,255,0.15); color:var(--teal); }
+.status-badge { display:inline-flex; align-items:center; gap:6px; font-size:0.9rem; padding:5px 14px; border-radius:20px; font-weight:700; }
+.running { background:rgba(0,255,136,0.1); color:var(--green); border:1px solid rgba(0,255,136,0.25); }
+.running::before { content:''; width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; box-shadow:0 0 8px var(--green); }
+.hold { background:rgba(255,150,0,0.1); color:var(--orange); border:1px solid rgba(255,150,0,0.25); }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
 /* ── FLOW ── */
-.flow-container { overflow-x: auto; padding-bottom: 1rem; }
-.flow { display: flex; flex-direction: column; gap: 0; max-width: 700px; margin: 0 auto; }
+.flow { display:flex; flex-direction:column; align-items:center; max-width:680px; margin:0 auto; }
 .flow-step {
-  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-  padding: 1rem 1.25rem; position: relative; font-size: 0.88rem;
+  width: 100%; border-radius: 14px; padding: 1.25rem 1.75rem;
+  font-size: 1.05rem; line-height: 1.6;
+  background: rgba(0,255,255,0.04); border: 1px solid rgba(0,255,255,0.2);
+  transition: border-color .3s, box-shadow .3s;
 }
-.flow-step.highlight { border-color: var(--teal); background: rgba(56,189,248,0.05); }
-.flow-step h4 { font-size: 0.8rem; color: var(--teal); margin-bottom: 0.25rem; letter-spacing: 1px; }
-.flow-arrow { text-align: center; color: var(--muted); font-size: 1.2rem; padding: 4px 0; }
-.flow-parallel { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.flow-step:hover { border-color: var(--teal); box-shadow: 0 0 30px rgba(0,255,255,0.15); }
+.flow-step.highlight { background: rgba(0,255,255,0.08); border-color: rgba(0,255,255,0.4); }
+.flow-step.done { background: rgba(0,255,136,0.06); border-color: rgba(0,255,136,0.3); }
+.flow-step h4 { font-size: 0.8rem; letter-spacing: 2px; color: var(--teal); margin-bottom: 0.35rem; font-weight: 900; text-shadow: 0 0 6px var(--teal); }
+.flow-step.done h4 { color: var(--green); text-shadow: 0 0 6px var(--green); }
+.flow-arrow { color: var(--teal); font-size: 2rem; text-shadow: 0 0 10px var(--teal); padding: 4px 0; }
+.flow-parallel { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; }
 
 /* ── QUOTE ── */
 #quote-section {
-  text-align: center; padding: 5rem 2rem;
-  background: radial-gradient(ellipse at center, rgba(167,139,250,0.08) 0%, transparent 70%);
+  position: relative; z-index: 1; text-align: center; padding: 6rem 2rem;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(191,0,255,0.12) 0%, transparent 60%);
 }
 .quote-box {
-  max-width: 760px; margin: 0 auto;
-  background: var(--card); border: 1px solid rgba(167,139,250,0.2);
-  border-radius: 20px; padding: 3rem;
+  max-width: 860px; margin: 0 auto;
+  background: linear-gradient(135deg, rgba(191,0,255,0.06), rgba(0,255,255,0.06));
+  border: 1px solid rgba(191,0,255,0.3); border-radius: 24px; padding: 4rem;
+  box-shadow: 0 0 60px rgba(191,0,255,0.15), 0 0 120px rgba(0,255,255,0.08);
 }
 .quote-box blockquote {
-  font-size: clamp(1rem, 2.5vw, 1.25rem); font-style: italic;
-  color: var(--text); line-height: 1.8; margin-bottom: 1.5rem;
+  font-size: clamp(1.3rem, 3vw, 2rem); font-style: italic;
+  line-height: 1.9; margin-bottom: 2rem; font-weight: 700;
 }
-.quote-box blockquote span { color: var(--teal); font-weight: 700; font-style: normal; }
-.quote-source { color: var(--muted); font-size: 0.85rem; }
-.quote-source b { color: var(--purple); }
+.quote-box blockquote .hl { color: var(--teal); text-shadow: 0 0 10px var(--teal); font-style: normal; }
+.quote-box blockquote .hl2 { color: var(--pink); text-shadow: 0 0 10px var(--pink); font-style: normal; }
+.quote-source { font-size: 1.1rem; color: rgba(255,255,255,0.5); }
+.quote-source b { color: var(--purple); text-shadow: 0 0 8px var(--purple); font-size: 1.2rem; }
+.quote-bottom {
+  margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid rgba(191,0,255,0.2);
+  font-size: 1.3rem; font-weight: 900; color: var(--gold);
+  text-shadow: 0 0 15px var(--gold);
+}
+
+/* ── RGB BORDER ANIMATION ── */
+@keyframes rgb-border {
+  0% { border-color: rgba(0,255,255,0.5); box-shadow: 0 0 30px rgba(0,255,255,0.2); }
+  33% { border-color: rgba(191,0,255,0.5); box-shadow: 0 0 30px rgba(191,0,255,0.2); }
+  66% { border-color: rgba(255,0,170,0.5); box-shadow: 0 0 30px rgba(255,0,170,0.2); }
+  100% { border-color: rgba(0,255,255,0.5); box-shadow: 0 0 30px rgba(0,255,255,0.2); }
+}
 
 /* ── LIGHTBOX ── */
-#lightbox {
-  display: none; position: fixed; inset: 0; z-index: 999;
-  background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
-}
-#lightbox.open { display: flex; }
-#lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
-#lightbox-close { position:absolute; top:1rem; right:1.5rem; color:#fff; font-size:2rem; cursor:pointer; }
+#lightbox { display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
+#lightbox.open { display:flex; }
+#lightbox img { max-width:90vw; max-height:90vh; border-radius:12px; border:1px solid var(--teal); box-shadow:0 0 60px rgba(0,255,255,0.3); }
+#lightbox-close { position:absolute; top:1.5rem; right:2rem; color:var(--teal); font-size:2.5rem; cursor:pointer; text-shadow:0 0 15px var(--teal); }
 
 /* ── FOOTER ── */
 footer {
-  text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem;
-  border-top: 1px solid var(--border);
+  text-align:center; padding:3rem; font-size:1rem; color:rgba(255,255,255,0.3);
+  border-top:1px solid rgba(255,255,255,0.05); position:relative; z-index:1;
 }
 </style>
 </head>
 <body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particle-canvas"></canvas>
 
 <!-- NAV -->
 <nav>
@@ -256,363 +432,330 @@ footer {
 
 <!-- HERO -->
 <div id="hero">
-  <div class="hero-tag">ITRI 營繕組</div>
-  <h1>業務研析與策進執行</h1>
-  <p class="sub">運用 RPA・Python・VBA 推動自動化，告別重複性工作</p>
-  <div class="hero-meta">
-    <span>📅 <b>2026/05/13</b></span>
-    <span>🤖 <b>4 個自動化案例</b></span>
-    <span>⏱️ 每月節省 <b>70+ 分鐘</b></span>
+  <div class="hero-badge">✦ ITRI 營繕組 ✦</div>
+  <h1>業務研析<br>與策進執行</h1>
+  <p class="sub">運用 RPA・Python・VBA<br>推動自動化，告別重複性工作</p>
+  <div class="hero-stats fade-in">
+    <div class="hero-stat">
+      <div class="big">4</div>
+      <div class="label">自動化案例</div>
+    </div>
+    <div class="hero-stat">
+      <div class="big">70+</div>
+      <div class="label">每月節省分鐘</div>
+    </div>
+    <div class="hero-stat">
+      <div class="big">2026</div>
+      <div class="label">05 / 13</div>
+    </div>
   </div>
   <div class="scroll-hint">↓</div>
 </div>
 
-<hr class="divider">
+<div class="laser-divider"></div>
 
 <!-- PROBLEMS -->
-<section id="problems">
-  <div class="section-label fade-in">Pain Points</div>
-  <h2 class="fade-in">RPA 執行遇到的問題</h2>
+<div id="problems">
+<div class="section-wrap">
+  <div class="section-label fade-in">⚠ PAIN POINTS</div>
+  <h2 class="neon-title fade-in">RPA 執行遇到的問題</h2>
   <div class="pain-grid">
     <div class="pain-card fade-in">
       <div class="pain-icon">🔒</div>
-      <h3>痛點一：院內部分網頁無法自動化</h3>
+      <h3>院內網頁無法自動化</h3>
       <p>RPA 無法抓取與點擊部分網頁元素，導致自動化流程卡關。</p>
-      <div class="cause"><b>根本原因：</b>內部資安防禦機制（阻擋自動化腳本連線、動態網頁架構）直接阻斷了 RPA 的網頁定位功能。</div>
+      <div class="cause"><b>根本原因：</b>內部資安防禦機制直接阻斷了 RPA 的網頁定位功能。</div>
     </div>
     <div class="pain-card fade-in">
       <div class="pain-icon">📦</div>
-      <h3>痛點二：RPA 流程無法匯出分享</h3>
-      <p>寫好的自動化腳本無法直接打包成檔案傳給同仁，其他人只能從頭重做。</p>
-      <div class="cause"><b>根本原因：</b>一般版本流程強制綁定開發者個人帳號，需升級進階授權（Premium）才能開啟共用功能。</div>
+      <h3>流程無法匯出分享</h3>
+      <p>寫好的腳本無法打包傳給同仁，其他人只能從頭重做。</p>
+      <div class="cause"><b>根本原因：</b>一般版本綁定個人帳號，需升級 Premium 才能共用。</div>
     </div>
   </div>
-</section>
+</div>
+</div>
 
-<hr class="divider">
+<div class="laser-divider"></div>
 
 <!-- EVENTS -->
-<section id="events">
-  <div class="section-label fade-in">Learning</div>
-  <h2 class="fade-in">近期分享教學會</h2>
+<div id="events">
+<div class="section-wrap">
+  <div class="section-label fade-in">🎓 LEARNING</div>
+  <h2 class="neon-purple fade-in">近期分享教學會</h2>
   <div class="events-grid fade-in">
     <div class="event-card">
       <div class="event-icon">⚡</div>
       <div>
         <h3>Power Automate 自動化救贖分享會</h3>
-        <p>【生存指南】告別重複性地獄！自動化救贖分享會</p>
+        <p>告別重複性地獄！生存指南分享</p>
       </div>
     </div>
     <div class="event-card">
       <div class="event-icon">🐍</div>
       <div>
         <h3>Python 基礎與天氣預測實戰</h3>
-        <p>空調團隊內部訓練，Python 基礎語法與天氣預測儀表板實戰</p>
+        <p>空調團隊內部訓練，天氣預測儀表板實作</p>
       </div>
     </div>
     <div class="event-card">
       <div class="event-icon">🎓</div>
       <div>
         <h3>師父領進門，修行看個人</h3>
-        <p>結合 Python 進階語法與實際案例，帶領成員自主深化技能</p>
+        <p>進階語法與案例實戰，帶領自主深化技能</p>
       </div>
     </div>
   </div>
-</section>
+</div>
+</div>
 
-<hr class="divider">
+<div class="laser-divider"></div>
 
 <!-- CASES -->
-<section id="cases">
-  <div class="section-label fade-in">Automation Cases</div>
-  <h2 class="fade-in">已執行自動化小案例</h2>
+<div id="cases">
+<div class="section-wrap">
+  <div class="section-label fade-in">🤖 CASES</div>
+  <h2 class="neon-gold fade-in">已執行自動化案例</h2>
 
   <div class="tab-bar fade-in">
-    <button class="tab-btn active" onclick="showTab('case1',this)">① RPA — 維護費計算</button>
-    <button class="tab-btn" onclick="showTab('case2',this)">② Python — 監控圖表辨識</button>
-    <button class="tab-btn" onclick="showTab('case3',this)">③ Python — 氣象數據採集</button>
-    <button class="tab-btn" onclick="showTab('case4',this)">④ VBA — 太陽能發電彙整</button>
+    <button class="tab-btn active" onclick="showTab('c1',this)">① RPA 維護費</button>
+    <button class="tab-btn" onclick="showTab('c2',this)">② Python 監控</button>
+    <button class="tab-btn" onclick="showTab('c3',this)">③ Python 氣象</button>
+    <button class="tab-btn" onclick="showTab('c4',this)">④ VBA 太陽能</button>
   </div>
 
-  <!-- Case 1 -->
-  <div id="case1" class="tab-panel active fade-in">
+  <div id="c1" class="tab-panel active fade-in">
     <div class="case-layout">
       <div class="case-info">
-        <h3>🤖 RPA — 每月維護費分攤自動化</h3>
-        <div class="pain-section">
+        <h3 style="color:var(--teal);text-shadow:0 0 15px var(--teal);">🤖 RPA — 每月維護費分攤</h3>
+        <div class="info-block red">
           <h4>▌ 解決痛點</h4>
-          <div class="bullet">人工逐月計算各院區維護費，流程繁瑣且易出錯</div>
-          <div class="bullet">數據分散於多個系統，整合耗時（每次約 30 分鐘）</div>
+          <div class="bullet">人工逐月計算各院區維護費，易出錯</div>
+          <div class="bullet">數據分散多系統，整合耗時約 30 分鐘</div>
         </div>
-        <div class="solution-section">
+        <div class="info-block green">
           <h4>▌ 自動化方案</h4>
-          <div class="bullet">收到 EMAIL → 自動下載附件一、附件二</div>
-          <div class="bullet">將 W41、W43 金額填寫至空間系統並執行報表計算</div>
-          <div class="bullet">下載水電及建物分攤表，執行 Excel 巨集完成附件二</div>
-          <div class="bullet">自動將所有成果輸出至指定資料夾</div>
+          <div class="bullet">收到 EMAIL → 自動下載附件</div>
+          <div class="bullet">W41、W43 金額自動填入空間系統</div>
+          <div class="bullet">執行 Excel 巨集完成報表</div>
+          <div class="bullet">成果自動輸出至指定資料夾</div>
         </div>
         <div class="stat-row">
-          <div class="stat-box"><div class="num">20</div><div class="unit">分鐘／次<br>節省作業時間</div></div>
-          <div class="stat-box"><div class="num">5</div><div class="unit">步驟<br>全自動執行</div></div>
+          <div class="stat-box"><div class="num">20</div><div class="unit">分鐘／次<br>節省</div></div>
+          <div class="stat-box"><div class="num">5</div><div class="unit">步驟<br>全自動</div></div>
         </div>
       </div>
-      <div>
-        <div class="img-gallery">
-          <img src="media/image32.png" alt="RPA流程截圖1" onclick="openLightbox(this)">
-          <img src="media/image33.png" alt="RPA流程截圖2" onclick="openLightbox(this)">
-          <img src="media/image34.png" alt="RPA流程截圖3" onclick="openLightbox(this)">
-          <img src="media/image35.png" alt="RPA流程截圖4" onclick="openLightbox(this)">
-        </div>
+      <div class="img-gallery">
+        <img src="media/image32.png" onclick="openLightbox(this)">
+        <img src="media/image33.png" onclick="openLightbox(this)">
+        <img src="media/image34.png" onclick="openLightbox(this)">
+        <img src="media/image35.png" onclick="openLightbox(this)">
       </div>
     </div>
   </div>
 
-  <!-- Case 2 -->
-  <div id="case2" class="tab-panel fade-in">
+  <div id="c2" class="tab-panel fade-in">
     <div class="case-layout">
       <div class="case-info">
-        <h3>🔍 Python — 監控圖表辨識應用</h3>
-        <div class="pain-section">
+        <h3 style="color:var(--purple);text-shadow:0 0 15px var(--purple);">🔍 Python — 監控圖表辨識</h3>
+        <div class="info-block red">
           <h4>▌ 解決痛點</h4>
-          <div class="bullet">監控報表需人工判讀大量圖表，費時且主觀</div>
-          <div class="bullet">異常判斷標準不一致，難以快速定位問題</div>
-          <div class="bullet">原截圖格式無法直接進行統計分析</div>
+          <div class="bullet">人工判讀大量圖表，費時且主觀</div>
+          <div class="bullet">截圖格式無法直接統計分析</div>
         </div>
-        <div class="solution-section">
+        <div class="info-block green">
           <h4>▌ 自動化方案</h4>
-          <div class="bullet">使用 OpenCV 進行 HSV 顏色空間遮罩辨識</div>
-          <div class="bullet">辨識「紅線 A 泵」與「藍線 B 泵」運轉狀態</div>
-          <div class="bullet">像素 X 座標精確換算為 24 小時制運轉時間點</div>
-          <div class="bullet">一鍵掃描上千張截圖，轉換為可分析數據檔案</div>
+          <div class="bullet">OpenCV HSV 顏色空間遮罩辨識</div>
+          <div class="bullet">辨識紅線 A 泵、藍線 B 泵狀態</div>
+          <div class="bullet">像素座標換算 24 小時制運轉時間</div>
+          <div class="bullet">一鍵掃描千張截圖，5 秒完成</div>
         </div>
         <div class="stat-row">
-          <div class="stat-box"><div class="num">5</div><div class="unit">秒<br>處理千張截圖</div></div>
-          <div class="stat-box"><div class="num">OpenCV</div><div class="unit">HSV 顏色辨識</div></div>
+          <div class="stat-box"><div class="num">5</div><div class="unit">秒<br>處理千張</div></div>
+          <div class="stat-box"><div class="num">OpenCV</div><div class="unit">HSV<br>辨識技術</div></div>
         </div>
       </div>
-      <div>
-        <div class="img-gallery">
-          <img src="media/image41.png" alt="監控圖表辨識1" onclick="openLightbox(this)">
-          <img src="media/image42.png" alt="監控圖表辨識2" onclick="openLightbox(this)">
-          <img src="media/image43.png" alt="監控圖表辨識3" onclick="openLightbox(this)" style="grid-column:1/-1;">
-        </div>
+      <div class="img-gallery">
+        <img src="media/image41.png" onclick="openLightbox(this)">
+        <img src="media/image42.png" onclick="openLightbox(this)">
+        <img src="media/image43.png" onclick="openLightbox(this)" style="grid-column:1/-1">
       </div>
     </div>
   </div>
 
-  <!-- Case 3 -->
-  <div id="case3" class="tab-panel fade-in">
+  <div id="c3" class="tab-panel fade-in">
     <div class="case-layout">
       <div class="case-info">
-        <h3>🌤️ Python — 自動採集氣象數據</h3>
-        <div class="pain-section">
+        <h3 style="color:var(--green);text-shadow:0 0 15px var(--green);">🌤️ Python — 自動採集氣象數據</h3>
+        <div class="info-block red">
           <h4>▌ 解決痛點</h4>
-          <div class="bullet">每月需手動至氣象署網站，逐一搜尋 6 個院區日照數據</div>
-          <div class="bullet">每次人工作業約需耗時 20 分鐘</div>
+          <div class="bullet">每月手動搜尋 6 個院區日照數據</div>
+          <div class="bullet">每次人工作業耗時 20 分鐘</div>
         </div>
-        <div class="solution-section">
+        <div class="info-block green">
           <h4>▌ 自動化方案</h4>
-          <div class="bullet">Python 爬蟲一鍵補齊 109 年至今的歷史數據</div>
-          <div class="bullet">自動抓取距離各院區最近的測站數據</div>
-          <div class="bullet">異常切換：永康站數據為 0 時，自動切換臺南站</div>
-          <div class="bullet">數據直接作為 PR 值計算依據，檢視 PV 發電效率</div>
+          <div class="bullet">爬蟲一鍵補齊 109 年至今歷史數據</div>
+          <div class="bullet">自動抓取距離最近測站數據</div>
+          <div class="bullet">永康站異常時自動切換臺南站</div>
+          <div class="bullet">直接作為 PV 效率 PR 值計算依據</div>
         </div>
         <div class="stat-row">
           <div class="stat-box"><div class="num">1</div><div class="unit">秒<br>取代 20 分鐘</div></div>
-          <div class="stat-box"><div class="num">109</div><div class="unit">年至今<br>歷史數據一鍵補齊</div></div>
+          <div class="stat-box"><div class="num">109</div><div class="unit">年至今<br>一鍵補齊</div></div>
         </div>
       </div>
-      <div>
-        <div class="img-gallery">
-          <img src="media/image44.png" alt="氣象採集1" onclick="openLightbox(this)">
-          <img src="media/image45.png" alt="氣象採集2" onclick="openLightbox(this)">
-          <img src="media/image46.png" alt="氣象採集3" onclick="openLightbox(this)" style="grid-column:1/-1;">
-        </div>
+      <div class="img-gallery">
+        <img src="media/image44.png" onclick="openLightbox(this)">
+        <img src="media/image45.png" onclick="openLightbox(this)">
+        <img src="media/image46.png" onclick="openLightbox(this)" style="grid-column:1/-1">
       </div>
     </div>
   </div>
 
-  <!-- Case 4 -->
-  <div id="case4" class="tab-panel fade-in">
+  <div id="c4" class="tab-panel fade-in">
     <div class="case-layout">
       <div class="case-info">
-        <h3>☀️ VBA — 太陽能發電量自動彙整</h3>
-        <div class="pain-section">
+        <h3 style="color:var(--gold);text-shadow:0 0 15px var(--gold);">☀️ VBA — 太陽能發電量彙整</h3>
+        <div class="info-block red">
           <h4>▌ 解決痛點</h4>
-          <div class="bullet">需手動進入伺服器，逐一開啟各院區各月份 A6 原始報表</div>
-          <div class="bullet">部分館別數據需手動計算加總，容易產生輸入錯誤</div>
-          <div class="bullet">每次約耗時 30 分鐘</div>
+          <div class="bullet">手動開啟各院區各月份 A6 原始報表</div>
+          <div class="bullet">手動計算加總，易出錯，耗時 30 分鐘</div>
         </div>
-        <div class="solution-section">
+        <div class="info-block green">
           <h4>▌ 自動化方案</h4>
-          <div class="bullet">動態 Excel 巨集自動定位網路硬碟路徑</div>
-          <div class="bullet">一鍵自動抓取並準確填入總表</div>
-          <div class="bullet">維持原始數據狀態（保留空值，不自動補 0）</div>
-          <div class="bullet">數據直接作為 PV 效率（PR 值）計算依據</div>
+          <div class="bullet">動態巨集自動定位網路硬碟路徑</div>
+          <div class="bullet">一鍵抓取並準確填入總表</div>
+          <div class="bullet">保留空值，不自動補 0</div>
+          <div class="bullet">直接作為 PV 效率計算依據</div>
         </div>
         <div class="stat-row">
           <div class="stat-box"><div class="num">1</div><div class="unit">秒<br>取代 30 分鐘</div></div>
-          <div class="stat-box"><div class="num">VBA</div><div class="unit">動態巨集<br>自動定位路徑</div></div>
+          <div class="stat-box"><div class="num">VBA</div><div class="unit">動態巨集<br>自動定位</div></div>
         </div>
       </div>
-      <div>
-        <div class="img-gallery">
-          <img src="media/image47.png" alt="太陽能彙整1" onclick="openLightbox(this)">
-          <img src="media/image48.png" alt="太陽能彙整2" onclick="openLightbox(this)">
-          <img src="media/image49.png" alt="太陽能彙整3" onclick="openLightbox(this)" style="grid-column:1/-1;">
-        </div>
+      <div class="img-gallery">
+        <img src="media/image47.png" onclick="openLightbox(this)">
+        <img src="media/image48.png" onclick="openLightbox(this)">
+        <img src="media/image49.png" onclick="openLightbox(this)" style="grid-column:1/-1">
       </div>
     </div>
   </div>
-</section>
+</div>
+</div>
 
-<hr class="divider">
+<div class="laser-divider"></div>
 
 <!-- VIDEO -->
-<section id="video" style="max-width:1100px; margin:0 auto; padding:5rem 2rem;">
-  <div class="section-label fade-in">Demo</div>
-  <h2 class="fade-in">RPA 執行示範影片</h2>
+<div id="video">
+<div class="video-section-wrap">
+  <div class="section-label fade-in">🎬 DEMO</div>
+  <h2 class="neon-pink fade-in">RPA 執行示範影片</h2>
   <div class="fade-in">
-    <div class="video-wrap">
+    <div class="video-outer">
       <video controls preload="metadata">
         <source src="media/media1.mp4" type="video/mp4">
-        您的瀏覽器不支援影片播放。
       </video>
     </div>
     <p class="video-caption">📽️ RPA 每月維護費分攤流程自動化 — 實際執行示範</p>
   </div>
-</section>
+</div>
+</div>
 
-<hr class="divider">
+<div class="laser-divider"></div>
 
 <!-- PRIORITY -->
-<section id="priority">
-  <div class="section-label fade-in">Backlog</div>
-  <h2 class="fade-in">高重複性工作盤點 — 優先排序</h2>
-  <p class="fade-in" style="color:var(--muted); margin-bottom:2rem;">
-    盤點 17 項高重複性任務，依「作業風險」、「時間成本」與「共通作業」重新排序分類
+<div id="priority">
+<div class="section-wrap">
+  <div class="section-label fade-in">📊 BACKLOG</div>
+  <h2 class="neon-title fade-in">高重複性工作盤點</h2>
+  <p class="fade-in" style="font-size:1.2rem; color:rgba(255,255,255,0.5); margin-bottom:3rem;">
+    盤點 17 項任務，依「作業風險」「時間成本」「共通作業」排序
   </p>
   <div class="priority-grid fade-in">
     <div class="priority-card p1">
-      <div class="priority-badge">排序一 · 優先執行</div>
+      <div class="p-badge">排序一 · 優先執行</div>
       <h3>⚡ 電費分攤</h3>
-      <p style="font-size:0.88rem; color:var(--muted); margin-bottom:0.75rem;">具高財務風險與高重複耗時，優先自動化</p>
+      <p>高財務風險與高重複耗時，優先自動化</p>
       <div class="tag-row">
         <span class="tag">用電數據自動寫入</span>
-        <span class="tag">電費分攤計算</span>
+        <span class="tag">電費計算</span>
         <span class="tag">每月自動執行</span>
       </div>
-      <div class="tag-row">
-        <span class="tag">電錶計算 Power Automate</span>
-        <span class="tag">KEY IN 至計費系統</span>
-      </div>
-      <div>
-        <span class="status-badge running">執行中 — 負責人：慧主</span>
-      </div>
+      <span class="status-badge running">執行中 — 負責人：慧主</span>
     </div>
     <div class="priority-card p2">
-      <div class="priority-badge">排序二 · 快速見效</div>
+      <div class="p-badge">排序二 · 快速見效</div>
       <h3>🏗️ 假日承攬商管理</h3>
-      <p style="font-size:0.88rem; color:var(--muted); margin-bottom:0.75rem;">邏輯單純，涉及安全管理，快速自動化可見效</p>
+      <p>邏輯單純，涉及安全管理，快速見效</p>
       <div class="tag-row">
         <span class="tag">假日施工一覽表</span>
-        <span class="tag">自動通知研究單位</span>
-        <span class="tag">會客系統自動登錄</span>
+        <span class="tag">自動通知</span>
+        <span class="tag">系統自動登錄</span>
       </div>
-      <div>
-        <span class="status-badge running">執行中 — 負責人：純瑋</span>
-      </div>
+      <span class="status-badge running">執行中 — 負責人：純瑋</span>
     </div>
     <div class="priority-card p3">
-      <div class="priority-badge">排序三 · 評估中</div>
-      <h3>📋 其他業務項目</h3>
-      <p style="font-size:0.88rem; color:var(--muted); margin-bottom:0.75rem;">多屬個人業務，邏輯較單純，風險度相對較低</p>
+      <div class="p-badge">排序三 · 評估中</div>
+      <h3>📋 其他業務</h3>
+      <p>多屬個人業務，邏輯較單純，風險度低</p>
       <div class="tag-row">
         <span class="tag">沙崙電費分攤</span>
         <span class="tag">場域進駐管理</span>
-        <span class="tag">宿舍電度分攤</span>
+        <span class="tag">宿舍電度</span>
       </div>
-      <div>
-        <span class="status-badge hold">暫緩 — 流程待重塑</span>
-      </div>
+      <span class="status-badge hold">暫緩 — 流程待重塑</span>
     </div>
   </div>
-</section>
+</div>
+</div>
 
-<hr class="divider">
+<div class="laser-divider"></div>
 
 <!-- FLOW -->
-<section id="flow">
-  <div class="section-label fade-in">Process Flow</div>
-  <h2 class="fade-in">假日承攬商管理流程</h2>
-  <div class="flow-container fade-in">
+<div id="flow">
+<div class="section-wrap">
+  <div class="section-label fade-in">🔄 PROCESS</div>
+  <h2 class="neon-purple fade-in">假日承攬商管理流程</h2>
+  <div class="fade-in">
     <div class="flow">
-      <div class="flow-step highlight">
-        <h4>START</h4>
-        開啟假日施工 Excel 管理檔案
+      <div class="flow-step highlight"><h4>START</h4>開啟假日施工 Excel 管理檔案</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><h4>CHECK</h4>確認同仁是否已填寫</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><h4>NOTIFY</h4>提醒相關同仁補件（若資料不全）</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><h4>VERIFY</h4>核對廠商進場名單、施工時間是否正確</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><h4>FIX</h4>若有錯誤 → 回溯至上步修正</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-parallel">
+        <div class="flow-step highlight"><h4>SIGN</h4>紙本呈交經理簽核</div>
+        <div class="flow-step highlight"><h4>REGISTER</h4>系統登錄訪客預約資料</div>
       </div>
       <div class="flow-arrow">↓</div>
-      <div class="flow-step">
-        <h4>CHECK</h4>
-        確認同仁是否已填寫
-      </div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-step">
-        <h4>NOTIFY</h4>
-        提醒相關同仁補件（若資料不全）
-      </div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-step">
-        <h4>VERIFY</h4>
-        核對廠商進場名單、施工時間是否正確
-      </div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-step">
-        <h4>FIX if needed</h4>
-        若有錯誤或資訊不符 → 回溯修正
-      </div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-step" style="padding:0; overflow:hidden; border:none; background:transparent;">
-        <div class="flow-parallel" style="margin:0;">
-          <div class="flow-step highlight" style="border-radius:10px;">
-            <h4>SIGN</h4>
-            紙本呈交經理實體簽核
-          </div>
-          <div class="flow-step highlight" style="border-radius:10px;">
-            <h4>REGISTER</h4>
-            系統登錄訪客預約資料
-          </div>
-        </div>
-      </div>
-      <div class="flow-arrow">↓</div>
-      <div class="flow-step" style="border-color:var(--green); background:rgba(52,211,153,0.05);">
-        <h4>COMPLETE</h4>
-        發送 Email 通知相關單位，完成流程
-      </div>
+      <div class="flow-step done"><h4>COMPLETE ✓</h4>發送 Email 通知相關單位，完成流程</div>
     </div>
   </div>
-</section>
+</div>
+</div>
 
-<hr class="divider">
+<div class="laser-divider"></div>
 
 <!-- QUOTE -->
 <div id="quote-section">
   <div class="quote-box fade-in">
     <blockquote>
-      「將自動化應用於<span>高效的流程</span>，會放大其效率；<br>
-      將自動化應用於<span>低效的流程</span>，則會放大其低效。」
+      「將自動化應用於<span class="hl">高效的流程</span>，會放大其效率；<br>
+      將自動化應用於<span class="hl2">低效的流程</span>，則會放大其低效。」
     </blockquote>
     <div class="quote-source">— <b>比爾·蓋茲</b>，微軟創辦人</div>
-    <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border); color:var(--muted); font-size:0.88rem;">
-      💡 因此，自動化的第一步，永遠是 <span style="color:var(--teal); font-weight:600;">『重塑流程』</span>
+    <div class="quote-bottom">
+      💡 自動化的第一步，永遠是「重塑流程」
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer>
-  <p>ITRI 營繕組 · 業務研析與策進執行 · 2026/05/13</p>
-</footer>
+<footer>ITRI 營繕組 · 業務研析與策進執行 · 2026/05/13</footer>
 
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox()">
@@ -621,7 +764,117 @@ footer {
 </div>
 
 <script>
-// Tab switch
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  spawnSparkle(e.clientX, e.clientY);
+});
+
+// ── SPARKLE TRAIL ──
+const COLORS = ['#00ffff','#bf00ff','#ff00aa','#ffd700','#00ff88','#ff6600','#ffffff'];
+let sparkleCount = 0;
+function spawnSparkle(x, y) {
+  if (sparkleCount++ % 2 !== 0) return;
+  const s = document.createElement('div');
+  const size = Math.random() * 12 + 4;
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  s.style.cssText = `
+    position:fixed; left:${x}px; top:${y}px; width:${size}px; height:${size}px;
+    border-radius:50%; pointer-events:none; z-index:9998;
+    background:${color}; transform:translate(-50%,-50%);
+    box-shadow:0 0 ${size*2}px ${color};
+    animation: sparkle-fade 0.7s ease-out forwards;
+  `;
+  document.body.appendChild(s);
+  setTimeout(() => s.remove(), 700);
+}
+const sparkleStyle = document.createElement('style');
+sparkleStyle.textContent = `
+  @keyframes sparkle-fade {
+    0% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+    100% { opacity:0; transform:translate(${(Math.random()-0.5)*60}px, ${-Math.random()*60-20}px) scale(0); }
+  }
+`;
+document.head.appendChild(sparkleStyle);
+
+// ── PARTICLE CANVAS ──
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = window.innerWidth;
+let H = canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+
+const STAR_COLORS = ['rgba(0,255,255,', 'rgba(191,0,255,', 'rgba(255,0,170,', 'rgba(255,215,0,', 'rgba(255,255,255,'];
+const stars = Array.from({length: 200}, () => ({
+  x: Math.random() * W, y: Math.random() * H,
+  r: Math.random() * 2 + 0.3,
+  speed: Math.random() * 0.4 + 0.05,
+  opacity: Math.random() * 0.6 + 0.1,
+  color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+  twinkle: Math.random() * Math.PI * 2,
+  twinkleSpeed: Math.random() * 0.03 + 0.01,
+}));
+
+// Shooting stars
+const shootingStars = [];
+function addShootingStar() {
+  shootingStars.push({
+    x: Math.random() * W, y: Math.random() * H * 0.5,
+    len: Math.random() * 200 + 100,
+    speed: Math.random() * 8 + 6,
+    angle: Math.PI / 4 + (Math.random() - 0.5) * 0.5,
+    opacity: 1, life: 1,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+  });
+}
+setInterval(addShootingStar, 2500);
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Stars
+  stars.forEach(s => {
+    s.twinkle += s.twinkleSpeed;
+    const op = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = s.color + op + ')';
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = s.color + '0.8)';
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    s.y -= s.speed;
+    if (s.y < -5) { s.y = H + 5; s.x = Math.random() * W; }
+  });
+
+  // Shooting stars
+  for (let i = shootingStars.length - 1; i >= 0; i--) {
+    const ss = shootingStars[i];
+    ctx.save();
+    const grad = ctx.createLinearGradient(ss.x, ss.y, ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
+    grad.addColorStop(0, ss.color + 'cc');
+    grad.addColorStop(1, 'transparent');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = ss.life;
+    ctx.beginPath();
+    ctx.moveTo(ss.x, ss.y);
+    ctx.lineTo(ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
+    ctx.stroke();
+    ctx.restore();
+    ss.x += Math.cos(ss.angle) * ss.speed;
+    ss.y += Math.sin(ss.angle) * ss.speed;
+    ss.life -= 0.018;
+    if (ss.life <= 0) shootingStars.splice(i, 1);
+  }
+
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ── TABS ──
 function showTab(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -629,36 +882,49 @@ function showTab(id, btn) {
   btn.classList.add('active');
 }
 
-// Lightbox
+// ── LIGHTBOX ──
 function openLightbox(img) {
   document.getElementById('lightbox-img').src = img.src;
   document.getElementById('lightbox').classList.add('open');
 }
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
 
-// Scroll animations
+// ── SCROLL FADE IN ──
 const observer = new IntersectionObserver(entries => {
   entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('visible'), i * 80);
-    }
+    if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 100);
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.08 });
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-// Nav active state
-const sections = document.querySelectorAll('section, #hero, #quote-section, #video');
+// ── NAV ACTIVE ──
+const sections = document.querySelectorAll('[id]');
 const navLinks = document.querySelectorAll('nav a');
 window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => {
-    if (window.scrollY >= s.offsetTop - 100) current = s.id;
-  });
-  navLinks.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-  });
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+// ── CLICK BURST ──
+document.addEventListener('click', e => {
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const angle = (i / 12) * Math.PI * 2;
+    const dist = Math.random() * 60 + 30;
+    b.style.cssText = `
+      position:fixed; left:${e.clientX}px; top:${e.clientY}px;
+      width:6px; height:6px; border-radius:50%; pointer-events:none; z-index:9997;
+      background:${color}; box-shadow:0 0 8px ${color};
+      transform:translate(-50%,-50%);
+    `;
+    document.body.appendChild(b);
+    b.animate([
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px)) scale(0)`, opacity: 0 }
+    ], { duration: 500, easing: 'ease-out' }).onfinish = () => b.remove();
+  }
 });
 </script>
 </body>
